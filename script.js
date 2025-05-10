@@ -1,45 +1,61 @@
-const icons = {
-  apple: "🍎",
-  banana: "🍌",
-  cherry: "🍒"
-};
-
 document.addEventListener("DOMContentLoaded", () => {
-  const select = document.getElementById("itemSelect");
+  const select = document.getElementById("imageSelect");
+  const preview = document.getElementById("previewContainer");
+  const input = document.getElementById("userInput");
   const submitBtn = document.getElementById("submitBtn");
 
-  if (submitBtn) {
+  // Se estamos na index.html
+  if (select && preview && submitBtn) {
+    select.addEventListener("change", () => {
+      const value = select.value;
+      preview.innerHTML = "";
+      if (value) {
+        const img = document.createElement("img");
+        img.src = value;
+        img.alt = "Prévia";
+        preview.appendChild(img);
+      }
+    });
+
     submitBtn.addEventListener("click", () => {
-      const selected = select.value;
-      if (!selected) {
-        alert("Por favor, escolha um item.");
+      const selectedImage = select.value;
+      const userText = input.value;
+
+      if (!selectedImage) {
+        alert("Por favor, selecione um personagem.");
         return;
       }
 
-      const quantity = Math.floor(Math.random() * 5) + 1; // 1 a 5
-      localStorage.setItem("item", selected);
-      localStorage.setItem("quantity", quantity);
+      localStorage.setItem("selectedImage", selectedImage);
+      localStorage.setItem("userText", userText);
+      localStorage.setItem("quantity", Math.floor(Math.random() * 5) + 1);
       window.location.href = "resultado.html";
     });
   }
 
-  // Lógica da página de resultado
-  const iconsContainer = document.getElementById("iconsContainer");
-  const countDisplay = document.getElementById("countDisplay");
+  // Se estamos na resultado.html
+  const resultImage = document.getElementById("resultImageContainer");
+  const resultText = document.getElementById("resultText");
+  const resultCount = document.getElementById("resultCount");
 
-  if (iconsContainer && countDisplay) {
-    const item = localStorage.getItem("item");
-    const quantity = parseInt(localStorage.getItem("quantity"), 10);
+  if (resultImage && resultText && resultCount) {
+    const imgPath = localStorage.getItem("selectedImage");
+    const userText = localStorage.getItem("userText");
+    const quantity = localStorage.getItem("quantity");
 
-    if (item && icons[item] && quantity) {
-      for (let i = 0; i < quantity; i++) {
-        const icon = document.createElement("span");
-        icon.textContent = icons[item];
-        iconsContainer.appendChild(icon);
-      }
-      countDisplay.textContent = `Quantidade: ${quantity}`;
-    } else {
-      countDisplay.textContent = "Nenhum item selecionado.";
+    if (imgPath) {
+      const img = document.createElement("img");
+      img.src = imgPath;
+      img.alt = "Imagem selecionada";
+      resultImage.appendChild(img);
+    }
+
+    if (userText) {
+      resultText.textContent = `Você escreveu: "${userText}"`;
+    }
+
+    if (quantity) {
+      resultCount.textContent = `Quantidade aleatória: ${quantity}`;
     }
   }
 });
